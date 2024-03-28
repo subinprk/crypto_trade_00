@@ -20,5 +20,3 @@ plt.plot_date(df['timestamp'], df['open'], '-')
 plt.show()
 
 conn.close()
-
-##github check
