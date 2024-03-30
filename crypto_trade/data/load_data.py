@@ -4,32 +4,37 @@ import	sqlite3
 import	ccxt
 	
 
-binance = ccxt.binance()
-timeframe = '15m'
-timestart = binance.parse8601('2024-03-18 00:00:00')
-symbol = 'ETH/USD'
-db_name = 'eth.db'
-table_name = 'eth_usd_15m'
-conn = sqlite3.connect(db_name)
+def extract_database(_symbol, _db_name, _table_name):
+	binance = ccxt.binance()
+	timeframe = '15m'
+	timestart = binance.parse8601('2024-03-18 00:00:00')
+	symbol = _symbol
+	db_name = _db_name
+	table_name = _table_name
+	conn = sqlite3.connect(db_name)
 
-eth_ohlcv = binance.fetch_ohlcv(symbol, timeframe, since=timestart, limit=1000)
-df = pd.DataFrame(eth_ohlcv, columns=['timestamp', 'open', 'high', 'low', 'close', 'volume'])
-df['timestamp'] = pd.to_datetime(df['timestamp'], unit='ms')
-df.set_index('timestamp', inplace=True)
-df.to_sql(table_name, conn, if_exists='replace', index=True)
-while True:
-	timestart = eth_ohlcv[-1][0]
 	eth_ohlcv = binance.fetch_ohlcv(symbol, timeframe, since=timestart, limit=1000)
 	df = pd.DataFrame(eth_ohlcv, columns=['timestamp', 'open', 'high', 'low', 'close', 'volume'])
 	df['timestamp'] = pd.to_datetime(df['timestamp'], unit='ms')
 	df.set_index('timestamp', inplace=True)
-	df.to_sql(table_name, conn, if_exists='append', index=True)
-	if len(eth_ohlcv) != 1000 :
-		break
+	df.to_sql(table_name, conn, if_exists='replace', index=True)
+	while True:
+		timestart = eth_ohlcv[-1][0]
+		eth_ohlcv = binance.fetch_ohlcv(symbol, timeframe, since=timestart, limit=1000)
+		df = pd.DataFrame(eth_ohlcv, columns=['timestamp', 'open', 'high', 'low', 'close', 'volume'])
+		df['timestamp'] = pd.to_datetime(df['timestamp'], unit='ms')
+		df.set_index('timestamp', inplace=True)
+		df.to_sql(table_name, conn, if_exists='append', index=True)
+		if len(eth_ohlcv) != 1000 :
+			break
 
-cursor = conn.cursor()
-cursor.execute('SELECT * FROM ' + table_name)
-rows = cursor.fetchall()
-#print(rows[0:5])
+	cursor = conn.cursor()
+	cursor.execute('SELECT * FROM ' + table_name)
+	rows = cursor.fetchall()
+	#print(rows[0:5])
 
-conn.close()
+	conn.close()
+
+
+extract_database('ETH/USD', 'eth.db', 'eth_usd_15m')
+extract_database('BTC/USD', 'btc.db', 'btc_usd_15m')
