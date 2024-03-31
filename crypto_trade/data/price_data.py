@@ -2,9 +2,8 @@
 import	pandas as pd
 import	sqlite3
 import	ccxt
-	
 
-def extract_database(_symbol, _db_name, _table_name):
+def price_database(_symbol, _db_name, _table_name):
 	binance = ccxt.binance()
 	timeframe = '15m'
 	timestart = binance.parse8601('2024-03-18 00:00:00')
@@ -36,5 +35,5 @@ def extract_database(_symbol, _db_name, _table_name):
 	conn.close()
 
 
-extract_database('ETH/USD', 'eth.db', 'eth_usd_15m')
-extract_database('BTC/USD', 'btc.db', 'btc_usd_15m')
+price_database('ETH/USD', 'eth.db', 'eth_usd_15m')
+price_database('BTC/USD', 'btc.db', 'btc_usd_15m')
