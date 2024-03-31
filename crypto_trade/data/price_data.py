@@ -37,3 +37,4 @@ def price_database(_symbol, _db_name, _table_name):
 
 price_database('ETH/USD', 'eth.db', 'eth_usd_15m')
 price_database('BTC/USD', 'btc.db', 'btc_usd_15m')
+price_database('DOG/USD', 'dog.db', 'dog_usd_15m')
