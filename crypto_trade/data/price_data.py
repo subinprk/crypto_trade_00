@@ -29,7 +29,7 @@ def price_database(_symbol, _db_name, _table_name):
 
 	cursor = conn.cursor()
 	cursor.execute('SELECT * FROM ' + table_name)
-	rows = cursor.fetchall()
+	#rows = cursor.fetchall()
 	#print(rows[0:5])
 
 	conn.close()
