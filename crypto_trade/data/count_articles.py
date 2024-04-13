@@ -5,16 +5,7 @@ import count_articles_data_process as cadp
 from bs4 import BeautifulSoup
 
 def putting_data_into_db(data, conn, table_name):
-	for i in data:
-		print(i)
-		df = pd.DataFrame(i, columns=['title', 'writer', 'ip', 'date', 'views', 'recommend'])
-		if pd.to_numeric(df['date'], errors='coerce').notna().all():
-			# If the date column contains numeric values, cast them to float and convert to datetime
-			df['date'] = pd.to_datetime(df['date'].astype(float), unit='ms')
-		else:
-			# If the date column contains datetime strings, convert to datetime without the unit parameter
-			df['date'] = pd.to_datetime(df['date'])
-		print("			", df['date'], df['title'], df['ip'])
+		df = pd.DataFrame(data, columns=['title', 'writer', 'ip', 'date', 'views', 'recommend'])
 		df.set_index('date', inplace=True)
 		df.to_sql(table_name, conn, if_exists='append', index=True)
 
@@ -27,7 +18,6 @@ def crawl_pages(url, num_pages):
 		if response.status_code == 200:
 			soup = BeautifulSoup(response.content, 'html.parser')
 			contents = soup.find('tbody').find_all('tr')
-			#print(contents, "\n")
 			data = cadp.process_data(contents)
 			putting_data_into_db(data, conn, TABLE_NAME)
 		else:

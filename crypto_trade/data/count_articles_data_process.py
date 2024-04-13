@@ -27,14 +27,14 @@ def get_date_views_recommend(content):
 
 def process_data(contents):
 	data = []
-	for i in contents:
-		if i == 0 or i == 1: # 0, 1번째 글은 공지사항이므로 제외
+	for index, i in enumerate(contents):
+		if index < 5: # 0, 1번째 글은 공지사항이므로 제외
 			continue
 		title_tag = i.find('a')
 		title = title_tag.text[1:]
 		writer, ip = get_writer_and_ip(i)
 		date, views, recommend = get_date_views_recommend(i)
-		data.append((title, writer, ip, date, views, recommend))
-	# for item in data:
-	# 	print(item)
+		data.append([title, writer, ip, date, views, recommend])
+	for item in data:
+		print(item)
 	return data
